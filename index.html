@@ -1,10 +1,175 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Quiz Nova</title>
-<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Quiz Template</title>
+  <style>
+    body {
+      background: #f5f6fa;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #222;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quiz-container {
+      background: #fff;
+      padding: 2rem 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(44, 62, 80, 0.14);
+      max-width: 420px;
+      width: 100%;
+    }
+    .quiz-header {
+      margin-bottom: 1.5rem;
+    }
+    .question {
+      font-weight: 600;
+      font-size: 1.15rem;
+      margin-bottom: 1.2rem;
+    }
+    .answers {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 1.5rem;
+    }
+    .answers li {
+      margin-bottom: 0.8rem;
+    }
+    .answer-btn {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 2px solid #e1e1e1;
+      border-radius: 8px;
+      background: #fafbfc;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 1rem;
+      text-align: left;
+    }
+    .answer-btn.selected,
+    .answer-btn:hover {
+      border-color: #1abc9c;
+      background: #e8f8f5;
+    }
+    .next-btn {
+      padding: 0.75rem 1.5rem;
+      background: #1abc9c;
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.17s;
+      width: 100%;
+    }
+    .next-btn:disabled {
+      background: #b5f0df;
+      cursor: not-allowed;
+    }
+    .result {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #1abc9c;
+      text-align: center;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
 <body>
-<p>Under Development</p>
+  <div class="quiz-container" id="quiz">
+    <div class="quiz-header">
+      <div class="question" id="question">Loading...</div>
+    </div>
+    <ul class="answers" id="answers"></ul>
+    <button class="next-btn" id="next" disabled>Next</button>
+  </div>
+  <script>
+    const quizData = [
+      {
+        question: "What is the capital of France?",
+        answers: ["Berlin", "London", "Paris", "Rome"],
+        correct: 2
+      },
+      {
+        question: "Which language runs in a web browser?",
+        answers: ["Python", "Java", "C", "JavaScript"],
+        correct: 3
+      },
+      {
+        question: "What does CSS stand for?",
+        answers: [
+          "Computer Style Sheets",
+          "Creative Style Sheets",
+          "Cascading Style Sheets",
+          "Colorful Style Sheets"
+        ],
+        correct: 2
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedAnswer = null;
+
+    const questionEl = document.getElementById('question');
+    const answersEl = document.getElementById('answers');
+    const nextBtn = document.getElementById('next');
+    const quizEl = document.getElementById('quiz');
+
+    function loadQuestion() {
+      selectedAnswer = null;
+      nextBtn.disabled = true;
+      const q = quizData[currentQuestion];
+      questionEl.textContent = q.question;
+
+      answersEl.innerHTML = '';
+      q.answers.forEach((answer, idx) => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = answer;
+        btn.onclick = () => selectAnswer(btn, idx);
+        li.appendChild(btn);
+        answersEl.appendChild(li);
+      });
+    }
+
+    function selectAnswer(btn, idx) {
+      Array.from(document.querySelectorAll('.answer-btn')).forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedAnswer = idx;
+      nextBtn.disabled = false;
+    }
+
+    nextBtn.onclick = () => {
+      if (selectedAnswer === quizData[currentQuestion].correct) {
+        score++;
+      }
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    };
+
+    function showResult() {
+      quizEl.innerHTML = `
+        <div class="result">
+          Quiz Completed!<br>
+          Your Score: ${score} / ${quizData.length}
+        </div>
+        <button class="next-btn" onclick="location.reload()">Restart</button>
+      `;
+    }
+
+    // Init
+    loadQuestion();
+  </script>
 </body>
 </html>
